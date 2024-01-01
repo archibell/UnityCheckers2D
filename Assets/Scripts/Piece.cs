@@ -36,7 +36,7 @@ public class Piece : MonoBehaviour
         Debug.Log("OnMouseDown gameObject: " + this.gameObject.name);
         mouse = Mouse.current;  // Initialize mouse.
                                 // Mouse.current >> The mouse that was added or updated last or null if there is no mouse connected to the system.                                
-        position2dOnMouseDown = PixelToWorldandV3ToV2(mouse);
+        position2dOnMouseDown = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
         rigidbody2d.MovePosition(position2dOnMouseDown);
         Debug.Log("OnMouseDown position2d: " + position2dOnMouseDown);
 
@@ -57,6 +57,11 @@ public class Piece : MonoBehaviour
         Vector2 position2d = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
         if (board.IsMoveValid(position2dOnMouseDown, position2d, player))
         {
+            Piece enemyPiece = board.GetAttackedPiece(position2dOnMouseDown, position2d, player);
+            if (enemyPiece != null)
+            {
+                board.RemoveEnemyPiece(enemyPiece);
+            }
             rigidbody2d.MovePosition(position2d);
             Debug.Log("OnMouseUpAsButton position2d: " + position2d);
         }

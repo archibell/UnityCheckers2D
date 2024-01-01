@@ -6,14 +6,14 @@ using UnityEngine.InputSystem;
 public class Board : MonoBehaviour
 {
     // Variable declarations.
-    List<Piece> pieces = new List<Piece>();
+    List<Piece> pieceList = new List<Piece>();
 
     // Start is called before the first frame update
     private void Start()
     {
         // Variable initializations.
-        pieces.AddRange(Object.FindObjectsOfType<Piece>()); // AddRange copies items from an Array to a list.
-        Debug.Log("List<Piece> pieces: " + pieces);
+        pieceList.AddRange(Object.FindObjectsOfType<Piece>()); // AddRange copies items from an Array to a list.
+        Debug.Log("List<Piece> pieceList: " + pieceList);
     }
 
     // Update is called once per frame
@@ -24,9 +24,6 @@ public class Board : MonoBehaviour
 
     public bool IsMoveValid(Vector2 fromPosition, Vector2 toPosition, Player player)
     {
-        // Snap positions to make code simplier.
-        fromPosition = SnapPositionToGrid(fromPosition);
-        toPosition = SnapPositionToGrid(toPosition);
         // Check if toPosition is within the board bounds.
         if (toPosition.x < -4 || toPosition.x > 4) 
         {
@@ -37,7 +34,7 @@ public class Board : MonoBehaviour
             return false;
         }
         // Check we are not landing on a cell that is occupied.
-        foreach (Piece piece in pieces)
+        foreach (Piece piece in pieceList)
         {
             Vector2 piecePosition2d = piece.GetComponent<Rigidbody2D>().position;
             if (toPosition == piecePosition2d)
@@ -51,7 +48,7 @@ public class Board : MonoBehaviour
             return false;
         }
         // Check if this is a valid diagonal move or a valid attack move.
-        if (!IsValidDiagStep(fromPosition, toPosition, player, 1) && !IsValidAttackMove(fromPosition, toPosition, player))
+        if (!IsValidDiagStep(fromPosition, toPosition, player, 1) && GetAttackedPiece(fromPosition, toPosition, player) == null)
         {
             return false;
         }
@@ -59,20 +56,12 @@ public class Board : MonoBehaviour
     }
 
     bool IsDarkCell(Vector2 position)
-    {
-        position = SnapPositionToGrid(position);
+    {        
         if ((Mathf.Floor(position.x) + Mathf.Floor(position.y)) % 2 == 0)
         {
             return true;
         }
         return false;
-    }
-
-    Vector2 SnapPositionToGrid(Vector2 position)
-    {
-        position.x = Mathf.Floor(position.x) + .5f;
-        position.y = Mathf.Floor(position.y) + .5f;
-        return position;
     }
 
     bool IsValidDiagStep (Vector2 fromPosition, Vector2 toPosition, Player player, float distance)
@@ -106,18 +95,18 @@ public class Board : MonoBehaviour
         return true;
     }
 
-    bool IsValidAttackMove(Vector2 fromPosition, Vector2 toPosition, Player player)
+    public Piece GetAttackedPiece(Vector2 fromPosition, Vector2 toPosition, Player player)
     {
         if (!IsValidDiagStep(fromPosition, toPosition, player, 2))
         {
-            return false;
+            return null;
         }
         // Get position of the cell we are flying over.
         Vector2 flyOverPosition = new Vector2(); // Create a new (0, 0) x,y vector.
         flyOverPosition.x = fromPosition.x + ((toPosition.x - fromPosition.x) / 2);
         flyOverPosition.y = fromPosition.y + ((toPosition.y - fromPosition.y) / 2);
         // Check if the flyOverPosition is flying over an enemy piece.
-        foreach (Piece piece in pieces)
+        foreach (Piece piece in pieceList)
         {
             Vector2 piecePosition2d = piece.GetComponent<Rigidbody2D>().position;
             if (piecePosition2d == flyOverPosition)
@@ -125,12 +114,17 @@ public class Board : MonoBehaviour
                 // Check the piece you are flying over is not your own.
                 if (player != piece.player)
                 {
-                    return true;
+                    return piece;
                 }
             }
         }
-        return false;
+        return null;
     }
 
+    public void RemoveEnemyPiece(Piece enemyPiece)
+    {
+        Destroy(enemyPiece.gameObject); // Destroy the enemyPiece gameObject so that it disappears from the game.
+        pieceList.Remove(enemyPiece); // Remove the piece from the list of pieces b/c it's no longer in play.
+    }
 
 }
