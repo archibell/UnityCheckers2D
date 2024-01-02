@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,7 @@ public class Board : MonoBehaviour
     // Variable declarations.
     List<Piece> pieceList = new List<Piece>();
     public Player playerTurn; // `PlayerDark` or `PlayerLight` is assigned to Pieces in Unity UI.
+    public Piece attackingPiece { get; set; } // A reference to the piece that must be used to do another attack. If not set, it means the player can move any piece.
 
     // Start is called before the first frame update
     private void Start()
@@ -37,8 +39,8 @@ public class Board : MonoBehaviour
         // Check we are not landing on a cell that is occupied.
         foreach (Piece piece in pieceList)
         {
-            Vector2 piecePosition2d = piece.GetComponent<Rigidbody2D>().position;
-            if (toPosition == piecePosition2d)
+            Vector2 piecePosition = piece.GetComponent<Rigidbody2D>().position;
+            if (toPosition == piecePosition)
             {
                 return false;
             }
@@ -125,6 +127,38 @@ public class Board : MonoBehaviour
         return null;
     }
 
+    public bool IsThereAnotherAttack(Vector2 fromPosition, Player player)
+    {
+        if (player.amIPlayerDark)
+        {
+            Vector2 toPositionUpLeft = new Vector2(fromPosition.x - 2, fromPosition.y + 2);
+            Vector2 toPositionUpRight = new Vector2(fromPosition.x + 2, fromPosition.y + 2);
+            if (IsMoveValid(fromPosition, toPositionUpLeft, player))
+            {
+                return true;
+            }
+            if (IsMoveValid(fromPosition, toPositionUpRight, player))
+            {
+                return true;
+            }
+            return false;
+        }
+        else
+        {
+            Vector2 toPositionDownLeft = new Vector2(fromPosition.x - 2, fromPosition.y - 2);
+            Vector2 toPositionDownRight = new Vector2(fromPosition.x + 2, fromPosition.y - 2);
+            if (IsMoveValid(fromPosition, toPositionDownLeft, player))
+            {
+                return true;
+            }
+            if (IsMoveValid(fromPosition, toPositionDownRight, player))
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
     public void RemoveEnemyPiece(Piece enemyPiece)
     {
         Destroy(enemyPiece.gameObject); // Destroy the enemyPiece gameObject so that it disappears from the game.
@@ -141,6 +175,7 @@ public class Board : MonoBehaviour
         {
             playerTurn = GameObject.Find("PlayerDark").GetComponent<Player>();
         }
+        attackingPiece = null; // Reset the attackingPiece so the next player can move any of their pieces.
     }
 
 }

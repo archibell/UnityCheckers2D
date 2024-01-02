@@ -33,22 +33,33 @@ public class Piece : MonoBehaviour
     // This function is called on Colliders and 2D Colliders marked as trigger.
     void OnMouseDown()
     {
-        if (board.playerTurn != player) // If it's not my turn then return early.
+        if (board.attackingPiece != null) // If there is an attackingPiece
+        {
+            if (board.attackingPiece != this) // and this piece is not that one, then return early.
+            {
+                return;
+            }
+        }
+        if (board.playerTurn != player) // If it's not my turn, then return early.
         {
             return;
         }
-        Debug.Log("OnMouseDown gameObject: " + this.gameObject.name);
         mouse = Mouse.current;  // Initialize mouse.
                                 // Mouse.current >> The mouse that was added or updated last or null if there is no mouse connected to the system.                                
         position2dOnMouseDown = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
         rigidbody2d.MovePosition(position2dOnMouseDown);
-        Debug.Log("OnMouseDown position2d: " + position2dOnMouseDown);
-
     }
 
     // OnMouseDrag is called when the user has clicked on a Collider and is still holding down the mouse.
     void OnMouseDrag()
     {
+        if (board.attackingPiece != null) // If there is an attackingPiece
+        {
+            if (board.attackingPiece != this) // and this piece is not that one, then return early.
+            {
+                return;
+            }
+        }
         if (board.playerTurn != player) // If it's not my turn then return early.
         {
             return;
@@ -61,27 +72,46 @@ public class Piece : MonoBehaviour
     // OnMouseUpAsButton is only called when the mouse is released over the same Collider as it was pressed.
     void OnMouseUpAsButton()
     {
+        if (board.attackingPiece != null) // If there is an attackingPiece
+        {
+            if (board.attackingPiece != this) // and this piece is not that one, then return early.
+            {
+                return;
+            }
+        }
         if (board.playerTurn != player) // If it's not my turn then return early.
         {
             return;
         }
-        Debug.Log("OnMouseUpAsButton: " + this.gameObject.name);
-        Vector2 position2d = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
-        if (board.IsMoveValid(position2dOnMouseDown, position2d, player))
+        Vector2 fromPosition = position2dOnMouseDown;
+
+        Vector2 toPosition = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
+        if (board.IsMoveValid(fromPosition, toPosition, player))
         {
-            Piece enemyPiece = board.GetAttackedPiece(position2dOnMouseDown, position2d, player);
+            Piece enemyPiece = board.GetAttackedPiece(fromPosition, toPosition, player);
             if (enemyPiece != null)
             {
                 board.RemoveEnemyPiece(enemyPiece);
+                if (board.IsThereAnotherAttack(toPosition, player)) // If there is another attack...
+                {
+                    board.attackingPiece = this; // then set the attackingPiece to the current piece to force the player to do another attack w/ this piece,
+                                                 // and don't end the turn.
+                }
+                else
+                {
+                    board.EndTurn(player); // End turn after a single attack.
+                }
             }
-            rigidbody2d.MovePosition(position2d);
-            Debug.Log("OnMouseUpAsButton position2d: " + position2d);
-            board.EndTurn(player);
+            else 
+            {
+                board.EndTurn(player); // End turn after a plain move.
+            }
+            rigidbody2d.MovePosition(toPosition); // In all cases, you move the piece to the new position b/c the position is valid.
         }
         else
         {
             // Snap to original position.
-            rigidbody2d.MovePosition(SnapPositionToGrid(position2dOnMouseDown));
+            rigidbody2d.MovePosition(SnapPositionToGrid(fromPosition));
         }                       
     }
 
