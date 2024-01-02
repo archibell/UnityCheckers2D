@@ -66,8 +66,14 @@ public class Piece : MonoBehaviour
         {
             return;
         }
-        Vector2 position2d = PixelToWorldandV3ToV2(mouse);
-        rigidbody2d.MovePosition(position2d);
+        Vector2 fromPosition = position2dOnMouseDown;
+        Vector2 toPosition = PixelToWorldandV3ToV2(mouse);
+        if (!board.IsWithinBoardBounds(fromPosition, toPosition))
+        {
+            rigidbody2d.MovePosition(fromPosition);
+            return;
+        }
+        rigidbody2d.MovePosition(toPosition);
         
     }
 
@@ -86,7 +92,6 @@ public class Piece : MonoBehaviour
             return;
         }
         Vector2 fromPosition = position2dOnMouseDown;
-
         Vector2 toPosition = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
         if (board.IsMoveValid(fromPosition, toPosition, player)) // Check if the player has a valid move.
         {

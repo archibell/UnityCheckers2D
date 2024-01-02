@@ -29,6 +29,20 @@ public class Board : MonoBehaviour
         
     }
 
+    public bool IsWithinBoardBounds(Vector2 fromPosition, Vector2 toPosition)
+    {
+        // Check if toPosition is within the board bounds.
+        if (toPosition.x < -4 || toPosition.x > 4)
+        {
+            return false;
+        }
+        if (toPosition.y < -4 || toPosition.y > 4)
+        {
+            return false;
+        }
+        return true;
+    }
+
     public bool IsMoveValid(Vector2 fromPosition, Vector2 toPosition, Player player)
     {
         // Check if toPosition is within the board bounds.
