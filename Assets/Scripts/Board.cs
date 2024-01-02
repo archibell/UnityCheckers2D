@@ -16,7 +16,11 @@ public class Board : MonoBehaviour
     {
         // Variable initializations.
         pieceList.AddRange(Object.FindObjectsOfType<Piece>()); // AddRange copies items from an Array to a list.
-        Debug.Log("List<Piece> pieceList: " + pieceList);
+        foreach (Piece piece in pieceList) // Initialize all piece's amIQueen to false.
+        {
+            piece.amIQueen = false;
+            Debug.Log("piece amIQueen: " + piece.amIQueen);
+        }
     }
 
     // Update is called once per frame
@@ -165,7 +169,7 @@ public class Board : MonoBehaviour
         pieceList.Remove(enemyPiece); // Remove the piece from the list of pieces b/c it's no longer in play.
     }
 
-    public void EndTurn(Player player)
+    public void EndTurn(Vector2 piecePosition, Piece piece, Player player)
     {
         if (player.amIPlayerDark) // If current player is dark, then set playerTurn to PlayerLight.
         {
@@ -176,6 +180,27 @@ public class Board : MonoBehaviour
             playerTurn = GameObject.Find("PlayerDark").GetComponent<Player>();
         }
         attackingPiece = null; // Reset the attackingPiece so the next player can move any of their pieces.
+        // Check if player should become Queen.
+        piece.amIQueen = ShouldIBecomeQueen(piecePosition, piece, player);
+        Debug.Log("I became Queen: " + piece.amIQueen);        
     }
 
+    bool ShouldIBecomeQueen(Vector2 piecePosition, Piece piece, Player player)
+    {
+        if (player.amIPlayerDark && !piece.amIQueen)
+        {            
+            if (piecePosition.y == 3.5f)
+            {
+                return true;
+            }
+        }
+        if (!player.amIPlayerDark && !piece.amIQueen)
+        {
+            if (piecePosition.y == -3.5f)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
