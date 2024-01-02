@@ -181,16 +181,19 @@ public class Board : MonoBehaviour
         }
         attackingPiece = null; // Reset the attackingPiece so the next player can move any of their pieces.
         // Check if player should become Queen.
-        piece.amIQueen = ShouldIBecomeQueen(piecePosition, piece, player);
+        piece.amIQueen = BecomeQueen(piecePosition, piece, player);
         Debug.Log("I became Queen: " + piece.amIQueen);        
     }
 
-    bool ShouldIBecomeQueen(Vector2 piecePosition, Piece piece, Player player)
+    // Check if piece should become a Queen or not. If becomes a Queen, then change the piece sprite to reflect the queenSprite.
+    bool BecomeQueen(Vector2 piecePosition, Piece piece, Player player)
     {
+        SpriteRenderer pieceRenderer = piece.GetComponent<SpriteRenderer>();
         if (player.amIPlayerDark && !piece.amIQueen)
         {            
             if (piecePosition.y == 3.5f)
             {
+                pieceRenderer.sprite = piece.queenSprite;
                 return true;
             }
         }
@@ -198,9 +201,12 @@ public class Board : MonoBehaviour
         {
             if (piecePosition.y == -3.5f)
             {
+                pieceRenderer.sprite = piece.queenSprite;
                 return true;
             }
         }
         return false;
     }
+
+
 }

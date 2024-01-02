@@ -14,6 +14,7 @@ public class Piece : MonoBehaviour
     Vector2 position2dOnMouseDown;
     Board board;
     public bool amIQueen { get; set; } // A reference to a piece that becomes a Queen, which is set by the Board class.
+    public Sprite queenSprite; // `PlayerDarkQueen` or `PlayerLightQueen` is assigned to Piece component in Unity UI.
 
     // Start is called before the first frame update.
     void Start()
