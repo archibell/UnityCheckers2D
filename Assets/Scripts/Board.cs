@@ -7,6 +7,7 @@ public class Board : MonoBehaviour
 {
     // Variable declarations.
     List<Piece> pieceList = new List<Piece>();
+    public Player playerTurn; // `PlayerDark` or `PlayerLight` is assigned to Pieces in Unity UI.
 
     // Start is called before the first frame update
     private void Start()
@@ -55,6 +56,7 @@ public class Board : MonoBehaviour
         return true;
     }
 
+    // Check we are landing on a dark cell, the only cells you can move into in checkers. 
     bool IsDarkCell(Vector2 position)
     {        
         if ((Mathf.Floor(position.x) + Mathf.Floor(position.y)) % 2 == 0)
@@ -64,6 +66,7 @@ public class Board : MonoBehaviour
         return false;
     }
 
+    // Check if this is a valid diagonal move.
     bool IsValidDiagStep (Vector2 fromPosition, Vector2 toPosition, Player player, float distance)
     {
         if (player.amIPlayerDark) // Check for PlayerDark.
@@ -95,6 +98,7 @@ public class Board : MonoBehaviour
         return true;
     }
 
+    // Return the enemyPiece in a valid attack move.
     public Piece GetAttackedPiece(Vector2 fromPosition, Vector2 toPosition, Player player)
     {
         if (!IsValidDiagStep(fromPosition, toPosition, player, 2))
@@ -125,6 +129,18 @@ public class Board : MonoBehaviour
     {
         Destroy(enemyPiece.gameObject); // Destroy the enemyPiece gameObject so that it disappears from the game.
         pieceList.Remove(enemyPiece); // Remove the piece from the list of pieces b/c it's no longer in play.
+    }
+
+    public void EndTurn(Player player)
+    {
+        if (player.amIPlayerDark) // If current player is dark, then set playerTurn to PlayerLight.
+        {
+            playerTurn = GameObject.Find("PlayerLight").GetComponent<Player>();
+        }
+        else // Otherwise, current player is light, then set playerTurn to PlayerDark.
+        {
+            playerTurn = GameObject.Find("PlayerDark").GetComponent<Player>();
+        }
     }
 
 }

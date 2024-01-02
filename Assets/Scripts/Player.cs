@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public bool amIPlayerDark;
+    public bool amIPlayerDark; // Yes/No boolean assigned in Unity UI.
 
     // Start is called before the first frame update
     void Start()

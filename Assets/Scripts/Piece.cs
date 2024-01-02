@@ -10,7 +10,7 @@ public class Piece : MonoBehaviour
     Mouse mouse;    // Class Mouse >> An input device representing a mouse. 
                     // Putting mouse here allows other method calls to call on it once the mouse has been established.
     Camera cam;
-    public Player player;
+    public Player player; // `PlayerDark` or `PlayerLight` is assigned to Pieces in Unity UI.
     Vector2 position2dOnMouseDown;
     Board board;
 
@@ -33,6 +33,10 @@ public class Piece : MonoBehaviour
     // This function is called on Colliders and 2D Colliders marked as trigger.
     void OnMouseDown()
     {
+        if (board.playerTurn != player) // If it's not my turn then return early.
+        {
+            return;
+        }
         Debug.Log("OnMouseDown gameObject: " + this.gameObject.name);
         mouse = Mouse.current;  // Initialize mouse.
                                 // Mouse.current >> The mouse that was added or updated last or null if there is no mouse connected to the system.                                
@@ -45,6 +49,10 @@ public class Piece : MonoBehaviour
     // OnMouseDrag is called when the user has clicked on a Collider and is still holding down the mouse.
     void OnMouseDrag()
     {
+        if (board.playerTurn != player) // If it's not my turn then return early.
+        {
+            return;
+        }
         Vector2 position2d = PixelToWorldandV3ToV2(mouse);
         rigidbody2d.MovePosition(position2d);
         
@@ -53,6 +61,10 @@ public class Piece : MonoBehaviour
     // OnMouseUpAsButton is only called when the mouse is released over the same Collider as it was pressed.
     void OnMouseUpAsButton()
     {
+        if (board.playerTurn != player) // If it's not my turn then return early.
+        {
+            return;
+        }
         Debug.Log("OnMouseUpAsButton: " + this.gameObject.name);
         Vector2 position2d = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
         if (board.IsMoveValid(position2dOnMouseDown, position2d, player))
@@ -64,13 +76,13 @@ public class Piece : MonoBehaviour
             }
             rigidbody2d.MovePosition(position2d);
             Debug.Log("OnMouseUpAsButton position2d: " + position2d);
+            board.EndTurn(player);
         }
         else
         {
             // Snap to original position.
             rigidbody2d.MovePosition(SnapPositionToGrid(position2dOnMouseDown));
-        }
-                
+        }                       
     }
 
     // Convert Pixel/Screen to World position.

@@ -1295,6 +1295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c62967344db254439a91d5f33175808, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerTurn: {fileID: 1906897139}
 --- !u!1001 &1187255334
 PrefabInstance:
   m_ObjectHideFlags: 0
