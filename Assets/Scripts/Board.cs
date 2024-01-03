@@ -29,7 +29,7 @@ public class Board : MonoBehaviour
         
     }
 
-    public bool IsWithinBoardBounds(Vector2 fromPosition, Vector2 toPosition)
+    public bool IsWithinBoardBounds(Vector2 fromPosition, Vector2 toPosition) // Used by Piece.OnMouseDrag() method call.
     {
         // Check if toPosition is within the board bounds.
         if (toPosition.x < -4 || toPosition.x > 4)
@@ -43,7 +43,7 @@ public class Board : MonoBehaviour
         return true;
     }
 
-    public bool IsMoveValid(Vector2 fromPosition, Vector2 toPosition, Player player)
+    public bool IsMoveValid(Vector2 fromPosition, Vector2 toPosition, Piece playerPiece, Player player)
     {
         // Check if toPosition is within the board bounds.
         if (toPosition.x < -4 || toPosition.x > 4) 
@@ -69,7 +69,7 @@ public class Board : MonoBehaviour
             return false;
         }
         // Check if this is a valid diagonal move or a valid attack move.
-        if (!IsValidDiagStep(fromPosition, toPosition, player, 1) && GetAttackedPiece(fromPosition, toPosition, player) == null)
+        if (!IsValidDiagStep(fromPosition, toPosition, playerPiece, player, 1) && GetAttackedPiece(fromPosition, toPosition, playerPiece, player) == null)
         {
             return false;
         }
@@ -87,11 +87,11 @@ public class Board : MonoBehaviour
     }
 
     // Check if this is a valid diagonal move.
-    bool IsValidDiagStep (Vector2 fromPosition, Vector2 toPosition, Player player, float distance)
+    bool IsValidDiagStep (Vector2 fromPosition, Vector2 toPosition, Piece playerPiece, Player player, float distance)
     {
-        if (player.amIPlayerDark) // Check for PlayerDark.
+        if (player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerDark.
         {
-            // If toPosition.x is neither +distance nor -distance, then false.
+            // If toPosition.x is neither -distance nor +distance, then false.
             if ((toPosition.x != (fromPosition.x - distance)) && (toPosition.x != (fromPosition.x + distance)))
             {
                 return false;
@@ -102,9 +102,9 @@ public class Board : MonoBehaviour
                 return false;
             }
         }
-        if (!player.amIPlayerDark) // Check for PlayerLight.
+        if (!player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerLight.
         {
-            // If toPosition.x is neither +distance nor -distance, then false.
+            // If toPosition.x is neither -distance nor +distance, then false.
             if ((toPosition.x != (fromPosition.x - distance)) && (toPosition.x != (fromPosition.x + distance)))
             {
                 return false;
@@ -115,25 +115,38 @@ public class Board : MonoBehaviour
                 return false;
             }
         }
+        if (playerPiece.amIQueen) // Check for any Queen.
+        {
+            // If toPosition.x is neither -distance nor +distance, then false.
+            if ((toPosition.x != (fromPosition.x - distance)) && (toPosition.x != (fromPosition.x + distance)))
+            {
+                return false;
+            }
+            // If toPosition.y is neither -distance nor +distance, then false.
+            if ((toPosition.y != (fromPosition.y - distance)) && (toPosition.y != (fromPosition.y + distance)))
+            {
+                return false;
+            }
+        }
         return true;
     }
 
     // Return the enemyPiece in a valid attack move.
-    public Piece GetAttackedPiece(Vector2 fromPosition, Vector2 toPosition, Player player)
+    public Piece GetAttackedPiece(Vector2 fromPosition, Vector2 toPosition, Piece playerPiece, Player player)
     {
-        if (!IsValidDiagStep(fromPosition, toPosition, player, 2))
+        if (!IsValidDiagStep(fromPosition, toPosition, playerPiece, player, 2))
         {
             return null;
         }
         // Get position of the cell we are flying over.
-        Vector2 flyOverPosition = new Vector2(); // Create a new (0, 0) x,y vector.
+        Vector2 flyOverPosition = new Vector2(); // Create a new x,y vector initialized to (0, 0).
         flyOverPosition.x = fromPosition.x + ((toPosition.x - fromPosition.x) / 2);
         flyOverPosition.y = fromPosition.y + ((toPosition.y - fromPosition.y) / 2);
         // Check if the flyOverPosition is flying over an enemy piece.
         foreach (Piece piece in pieceList)
         {
-            Vector2 piecePosition2d = piece.GetComponent<Rigidbody2D>().position;
-            if (piecePosition2d == flyOverPosition)
+            Vector2 piecePosition = piece.GetComponent<Rigidbody2D>().position;
+            if (piecePosition == flyOverPosition)
             {
                 // Check the piece you are flying over is not your own.
                 if (player != piece.player)
@@ -145,36 +158,59 @@ public class Board : MonoBehaviour
         return null;
     }
 
-    public bool IsThereAnotherAttack(Vector2 fromPosition, Player player)
+    public bool IsThereAnotherAttack(Vector2 fromPosition, Piece playerPiece, Player player)
     {
-        if (player.amIPlayerDark)
-        {
-            Vector2 toPositionUpLeft = new Vector2(fromPosition.x - 2, fromPosition.y + 2);
-            Vector2 toPositionUpRight = new Vector2(fromPosition.x + 2, fromPosition.y + 2);
-            if (IsMoveValid(fromPosition, toPositionUpLeft, player))
+        Vector2 toPositionUpLeft = new Vector2(fromPosition.x - 2, fromPosition.y + 2);
+        Vector2 toPositionUpRight = new Vector2(fromPosition.x + 2, fromPosition.y + 2);
+
+        Vector2 toPositionDownLeft = new Vector2(fromPosition.x - 2, fromPosition.y - 2);
+        Vector2 toPositionDownRight = new Vector2(fromPosition.x + 2, fromPosition.y - 2);
+
+        if (player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerDark.
+        {            
+            if (IsMoveValid(fromPosition, toPositionUpLeft, playerPiece, player))
             {
                 return true;
             }
-            if (IsMoveValid(fromPosition, toPositionUpRight, player))
-            {
-                return true;
-            }
-            return false;
-        }
-        else
-        {
-            Vector2 toPositionDownLeft = new Vector2(fromPosition.x - 2, fromPosition.y - 2);
-            Vector2 toPositionDownRight = new Vector2(fromPosition.x + 2, fromPosition.y - 2);
-            if (IsMoveValid(fromPosition, toPositionDownLeft, player))
-            {
-                return true;
-            }
-            if (IsMoveValid(fromPosition, toPositionDownRight, player))
+            if (IsMoveValid(fromPosition, toPositionUpRight, playerPiece, player))
             {
                 return true;
             }
             return false;
         }
+        if (player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerLight.
+        {            
+            if (IsMoveValid(fromPosition, toPositionDownLeft, playerPiece, player))
+            {
+                return true;
+            }
+            if (IsMoveValid(fromPosition, toPositionDownRight, playerPiece, player))
+            {
+                return true;
+            }
+            return false;
+        }
+        if (playerPiece.amIQueen) // Check for any Queen.
+        {
+            if (IsMoveValid(fromPosition, toPositionUpLeft, playerPiece, player))
+            { 
+                return true;
+            }
+            if (IsMoveValid(fromPosition, toPositionUpRight, playerPiece, player))
+            {
+                return true;
+            }
+            if (IsMoveValid(fromPosition, toPositionDownLeft, playerPiece, player))
+            {
+                return true;
+            }
+            if (IsMoveValid(fromPosition, toPositionDownRight, playerPiece, player))
+            {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 
     public void RemoveEnemyPiece(Piece enemyPiece)
@@ -194,8 +230,10 @@ public class Board : MonoBehaviour
             playerTurn = GameObject.Find("PlayerDark").GetComponent<Player>();
         }
         attackingPiece = null; // Reset the attackingPiece so the next player can move any of their pieces.
-        // Check if player should become Queen.
-        piece.amIQueen = BecomeQueen(piecePosition, piece, player);
+        if (!piece.amIQueen) // If I'm not already a Queen, check if player should become Queen.
+        {
+            piece.amIQueen = BecomeQueen(piecePosition, piece, player);
+        }
         Debug.Log("I became Queen: " + piece.amIQueen);        
     }
 

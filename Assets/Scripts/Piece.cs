@@ -67,13 +67,13 @@ public class Piece : MonoBehaviour
             return;
         }
         Vector2 fromPosition = position2dOnMouseDown;
-        Vector2 toPosition = PixelToWorldandV3ToV2(mouse);
+        Vector2 toPosition = PixelToWorldandV3ToV2(mouse); // Can't SnapPositionToGrid() here b/c we need smooth mouse drag.
         if (!board.IsWithinBoardBounds(fromPosition, toPosition))
         {
-            rigidbody2d.MovePosition(fromPosition);
+            rigidbody2d.MovePosition(fromPosition); // If mouse is out of bounds, then move piece to original position & return early.
             return;
         }
-        rigidbody2d.MovePosition(toPosition);
+        rigidbody2d.MovePosition(toPosition); // If reach here, the mouse is inside bounds, then move piece to new position.
         
     }
 
@@ -93,13 +93,13 @@ public class Piece : MonoBehaviour
         }
         Vector2 fromPosition = position2dOnMouseDown;
         Vector2 toPosition = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
-        if (board.IsMoveValid(fromPosition, toPosition, player)) // Check if the player has a valid move.
+        if (board.IsMoveValid(fromPosition, toPosition, this, player)) // Check if the player has a valid move.
         {
-            Piece enemyPiece = board.GetAttackedPiece(fromPosition, toPosition, player); //GetAttackedPiece will return a Piece if a piece was attacked, or null if it was a plain move.
+            Piece enemyPiece = board.GetAttackedPiece(fromPosition, toPosition, this, player); //GetAttackedPiece will return a Piece if a piece was attacked, or null if it was a plain move.
             if (enemyPiece != null)
             {
                 board.RemoveEnemyPiece(enemyPiece); // If there is an enemyPiece, then remove it from the board.
-                if (board.IsThereAnotherAttack(toPosition, player)) // Check if there is another attack.
+                if (board.IsThereAnotherAttack(toPosition, this, player)) // Check if there is another attack.
                 {
                     board.attackingPiece = this; // If so, then set the attackingPiece to the current piece to force the player to do another attack w/ this piece,
                                                  // and don't end the turn.
