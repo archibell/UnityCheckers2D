@@ -178,7 +178,7 @@ public class Board : MonoBehaviour
             }
             return false;
         }
-        if (player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerLight.
+        if (!player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerLight.
         {            
             if (IsMoveValid(fromPosition, toPositionDownLeft, playerPiece, player))
             {
