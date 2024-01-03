@@ -16,11 +16,6 @@ public class Board : MonoBehaviour
     {
         // Variable initializations.
         pieceList.AddRange(Object.FindObjectsOfType<Piece>()); // AddRange copies items from an Array to a list.
-        foreach (Piece piece in pieceList) // Initialize all piece's amIQueen to false.
-        {
-            piece.amIQueen = false;
-            Debug.Log("piece amIQueen: " + piece.amIQueen);
-        }
     }
 
     // Update is called once per frame
@@ -29,7 +24,7 @@ public class Board : MonoBehaviour
         
     }
 
-    public bool IsWithinBoardBounds(Vector2 fromPosition, Vector2 toPosition) // Used by Piece.OnMouseDrag() method call.
+    public bool IsWithinBoardBounds(Vector2 toPosition) // Used by Piece.OnMouseDrag() method call.
     {
         // Check if toPosition is within the board bounds.
         if (toPosition.x < -4 || toPosition.x > 4)
@@ -46,11 +41,7 @@ public class Board : MonoBehaviour
     public bool IsMoveValid(Vector2 fromPosition, Vector2 toPosition, Piece playerPiece, Player player)
     {
         // Check if toPosition is within the board bounds.
-        if (toPosition.x < -4 || toPosition.x > 4) 
-        {
-            return false;
-        }
-        if (toPosition.y < -4 || toPosition.y > 4)
+        if (!IsWithinBoardBounds(toPosition))
         {
             return false;
         }
@@ -64,7 +55,7 @@ public class Board : MonoBehaviour
             }
         }
         // Check we are landing on a dark cell, the only cells you can move into in checkers.
-        if (!IsDarkCell(toPosition))
+        if (!IsDarkCell(toPosition)) // This code is not strictly needed b/c already handled by IsValidDiagStep(), but added for explicitness.
         {
             return false;
         }

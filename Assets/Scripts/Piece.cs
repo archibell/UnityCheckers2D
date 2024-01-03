@@ -14,6 +14,7 @@ public class Piece : MonoBehaviour
     Vector2 position2dOnMouseDown;
     Board board;
     public bool amIQueen { get; set; } // A reference to a piece that becomes a Queen, which is set by the Board class.
+                                       // For a bool, the default value is always false.
     public Sprite queenSprite; // `PlayerDarkQueen` or `PlayerLightQueen` is assigned to Piece component in Unity UI.
 
     // Start is called before the first frame update.
@@ -22,6 +23,8 @@ public class Piece : MonoBehaviour
         // Variable initializations.
         rigidbody2d = GetComponent<Rigidbody2D>();
         cam = Camera.main;
+        mouse = Mouse.current;  // Initialize mouse.
+                                // Mouse.current >> it's the mouse device connected to the computer.               
         board = GameObject.Find("Board").GetComponent<Board>();
     }
 
@@ -45,9 +48,7 @@ public class Piece : MonoBehaviour
         if (board.playerTurn != player) // If it's not my turn, then return early.
         {
             return;
-        }
-        mouse = Mouse.current;  // Initialize mouse.
-                                // Mouse.current >> The mouse that was added or updated last or null if there is no mouse connected to the system.                                
+        }                 
         position2dOnMouseDown = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
         rigidbody2d.MovePosition(position2dOnMouseDown);
     }
@@ -68,7 +69,7 @@ public class Piece : MonoBehaviour
         }
         Vector2 fromPosition = position2dOnMouseDown;
         Vector2 toPosition = PixelToWorldandV3ToV2(mouse); // Can't SnapPositionToGrid() here b/c we need smooth mouse drag.
-        if (!board.IsWithinBoardBounds(fromPosition, toPosition))
+        if (!board.IsWithinBoardBounds(toPosition))
         {
             rigidbody2d.MovePosition(fromPosition); // If mouse is out of bounds, then move piece to original position & return early.
             return;
