@@ -94,10 +94,24 @@ public class Piece : MonoBehaviour
         }
         Vector2 fromPosition = position2dOnMouseDown;
         Vector2 toPosition = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
+        if (PerformMove(fromPosition, toPosition)) // Check if we should perform a move.
+        {
+            rigidbody2d.MovePosition(toPosition); // If yes, then move the piece to the new position.
+        }
+        else // Otherwise, we should not move.
+        {
+            // Then snap to original position.
+            rigidbody2d.MovePosition(SnapPositionToGrid(fromPosition));
+        }                       
+    }
+
+    bool PerformMove(Vector2 fromPosition, Vector2 toPosition)
+    {
         if (board.IsMoveValid(fromPosition, toPosition, this)) // Check if the player has a valid move.
         {
-            Piece enemyPiece = board.GetAttackedPiece(fromPosition, toPosition, this); //GetAttackedPiece will return a Piece if a piece was attacked, or null if it was a plain move.
-            if (enemyPiece != null)
+            Piece enemyPiece = board.GetAttackedPiece(fromPosition, toPosition, this); //GetAttackedPiece will return a Piece if a piece was attacked,
+                                                                                       //or null if it was a plain move.
+            if (enemyPiece != null) // Check if we are going over an enemyPiece.
             {
                 board.RemoveEnemyPiece(enemyPiece); // If there is an enemyPiece, then remove it from the board.
                 if (board.IsThereAnotherAttack(toPosition, this)) // Check if there is another attack.
@@ -114,13 +128,12 @@ public class Piece : MonoBehaviour
             {
                 board.EndTurn(toPosition, this); // Then end the turn.
             }
-            rigidbody2d.MovePosition(toPosition); // In all cases, you move the piece to the new position b/c the position is valid.
+            return true;
         }
         else
         {
-            // If it was not a valid move, then snap to original position.
-            rigidbody2d.MovePosition(SnapPositionToGrid(fromPosition));
-        }                       
+            return false;
+        }
     }
 
     // Convert Pixel/Screen to World position.
