@@ -1298,6 +1298,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   amIPlayerDark: 0
+  queenSprite: {fileID: 21300000, guid: 606611716b8a8b24ba61c044ed9bca26, type: 3}
 --- !u!1001 &904590853
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3081,6 +3082,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   amIPlayerDark: 1
+  queenSprite: {fileID: 21300000, guid: 115417e44f0735745beabc8644510c5d, type: 3}
 --- !u!1001 &2003121651
 PrefabInstance:
   m_ObjectHideFlags: 0

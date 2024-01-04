@@ -15,7 +15,7 @@ public class Piece : MonoBehaviour
     Board board;
     public bool amIQueen { get; set; } // A reference to a piece that becomes a Queen, which is set by the Board class.
                                        // For a bool, the default value is always false.
-    public Sprite queenSprite; // `PlayerDarkQueen` or `PlayerLightQueen` is assigned to Piece component in Unity UI.
+    
 
     // Start is called before the first frame update.
     void Start()
@@ -94,25 +94,25 @@ public class Piece : MonoBehaviour
         }
         Vector2 fromPosition = position2dOnMouseDown;
         Vector2 toPosition = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
-        if (board.IsMoveValid(fromPosition, toPosition, this, player)) // Check if the player has a valid move.
+        if (board.IsMoveValid(fromPosition, toPosition, this)) // Check if the player has a valid move.
         {
-            Piece enemyPiece = board.GetAttackedPiece(fromPosition, toPosition, this, player); //GetAttackedPiece will return a Piece if a piece was attacked, or null if it was a plain move.
+            Piece enemyPiece = board.GetAttackedPiece(fromPosition, toPosition, this); //GetAttackedPiece will return a Piece if a piece was attacked, or null if it was a plain move.
             if (enemyPiece != null)
             {
                 board.RemoveEnemyPiece(enemyPiece); // If there is an enemyPiece, then remove it from the board.
-                if (board.IsThereAnotherAttack(toPosition, this, player)) // Check if there is another attack.
+                if (board.IsThereAnotherAttack(toPosition, this)) // Check if there is another attack.
                 {
                     board.attackingPiece = this; // If so, then set the attackingPiece to the current piece to force the player to do another attack w/ this piece,
                                                  // and don't end the turn.
                 }
                 else
                 {
-                    board.EndTurn(toPosition, this, player); // End turn after a single attack.
+                    board.EndTurn(toPosition, this); // End turn after a single attack.
                 }
             }
             else // If enemyPiece is null, then it was a plain move.
             {
-                board.EndTurn(toPosition, this, player); // Then end the turn.
+                board.EndTurn(toPosition, this); // Then end the turn.
             }
             rigidbody2d.MovePosition(toPosition); // In all cases, you move the piece to the new position b/c the position is valid.
         }

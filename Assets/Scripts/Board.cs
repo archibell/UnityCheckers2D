@@ -38,7 +38,7 @@ public class Board : MonoBehaviour
         return true;
     }
 
-    public bool IsMoveValid(Vector2 fromPosition, Vector2 toPosition, Piece playerPiece, Player player)
+    public bool IsMoveValid(Vector2 fromPosition, Vector2 toPosition, Piece playerPiece)
     {
         // Check if toPosition is within the board bounds.
         if (!IsWithinBoardBounds(toPosition))
@@ -60,7 +60,7 @@ public class Board : MonoBehaviour
             return false;
         }
         // Check if this is a valid diagonal move or a valid attack move.
-        if (!IsValidDiagStep(fromPosition, toPosition, playerPiece, player, 1) && GetAttackedPiece(fromPosition, toPosition, playerPiece, player) == null)
+        if (!IsValidDiagStep(fromPosition, toPosition, playerPiece, 1) && GetAttackedPiece(fromPosition, toPosition, playerPiece) == null)
         {
             return false;
         }
@@ -78,9 +78,9 @@ public class Board : MonoBehaviour
     }
 
     // Check if this is a valid diagonal move.
-    bool IsValidDiagStep (Vector2 fromPosition, Vector2 toPosition, Piece playerPiece, Player player, float distance)
+    bool IsValidDiagStep (Vector2 fromPosition, Vector2 toPosition, Piece playerPiece, float distance)
     {
-        if (player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerDark.
+        if (playerPiece.player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerDark.
         {
             // If toPosition.x is neither -distance nor +distance, then false.
             if ((toPosition.x != (fromPosition.x - distance)) && (toPosition.x != (fromPosition.x + distance)))
@@ -93,7 +93,7 @@ public class Board : MonoBehaviour
                 return false;
             }
         }
-        if (!player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerLight.
+        if (!playerPiece.player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerLight.
         {
             // If toPosition.x is neither -distance nor +distance, then false.
             if ((toPosition.x != (fromPosition.x - distance)) && (toPosition.x != (fromPosition.x + distance)))
@@ -123,9 +123,9 @@ public class Board : MonoBehaviour
     }
 
     // Return the enemyPiece in a valid attack move.
-    public Piece GetAttackedPiece(Vector2 fromPosition, Vector2 toPosition, Piece playerPiece, Player player)
+    public Piece GetAttackedPiece(Vector2 fromPosition, Vector2 toPosition, Piece playerPiece)
     {
-        if (!IsValidDiagStep(fromPosition, toPosition, playerPiece, player, 2))
+        if (!IsValidDiagStep(fromPosition, toPosition, playerPiece, 2))
         {
             return null;
         }
@@ -140,7 +140,7 @@ public class Board : MonoBehaviour
             if (piecePosition == flyOverPosition)
             {
                 // Check the piece you are flying over is not your own.
-                if (player != piece.player)
+                if (playerPiece.player != piece.player)
                 {
                     return piece;
                 }
@@ -149,7 +149,7 @@ public class Board : MonoBehaviour
         return null;
     }
 
-    public bool IsThereAnotherAttack(Vector2 fromPosition, Piece playerPiece, Player player)
+    public bool IsThereAnotherAttack(Vector2 fromPosition, Piece playerPiece)
     {
         Vector2 toPositionUpLeft = new Vector2(fromPosition.x - 2, fromPosition.y + 2);
         Vector2 toPositionUpRight = new Vector2(fromPosition.x + 2, fromPosition.y + 2);
@@ -157,25 +157,25 @@ public class Board : MonoBehaviour
         Vector2 toPositionDownLeft = new Vector2(fromPosition.x - 2, fromPosition.y - 2);
         Vector2 toPositionDownRight = new Vector2(fromPosition.x + 2, fromPosition.y - 2);
 
-        if (player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerDark.
+        if (playerPiece.player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerDark.
         {            
-            if (IsMoveValid(fromPosition, toPositionUpLeft, playerPiece, player))
+            if (IsMoveValid(fromPosition, toPositionUpLeft, playerPiece))
             {
                 return true;
             }
-            if (IsMoveValid(fromPosition, toPositionUpRight, playerPiece, player))
+            if (IsMoveValid(fromPosition, toPositionUpRight, playerPiece))
             {
                 return true;
             }
             return false;
         }
-        if (!player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerLight.
+        if (!playerPiece.player.amIPlayerDark && !playerPiece.amIQueen) // Check for PlayerLight.
         {            
-            if (IsMoveValid(fromPosition, toPositionDownLeft, playerPiece, player))
+            if (IsMoveValid(fromPosition, toPositionDownLeft, playerPiece))
             {
                 return true;
             }
-            if (IsMoveValid(fromPosition, toPositionDownRight, playerPiece, player))
+            if (IsMoveValid(fromPosition, toPositionDownRight, playerPiece))
             {
                 return true;
             }
@@ -183,19 +183,19 @@ public class Board : MonoBehaviour
         }
         if (playerPiece.amIQueen) // Check for any Queen.
         {
-            if (IsMoveValid(fromPosition, toPositionUpLeft, playerPiece, player))
+            if (IsMoveValid(fromPosition, toPositionUpLeft, playerPiece))
             { 
                 return true;
             }
-            if (IsMoveValid(fromPosition, toPositionUpRight, playerPiece, player))
+            if (IsMoveValid(fromPosition, toPositionUpRight, playerPiece))
             {
                 return true;
             }
-            if (IsMoveValid(fromPosition, toPositionDownLeft, playerPiece, player))
+            if (IsMoveValid(fromPosition, toPositionDownLeft, playerPiece))
             {
                 return true;
             }
-            if (IsMoveValid(fromPosition, toPositionDownRight, playerPiece, player))
+            if (IsMoveValid(fromPosition, toPositionDownRight, playerPiece))
             {
                 return true;
             }
@@ -210,9 +210,9 @@ public class Board : MonoBehaviour
         pieceList.Remove(enemyPiece); // Remove the piece from the list of pieces b/c it's no longer in play.
     }
 
-    public void EndTurn(Vector2 piecePosition, Piece piece, Player player)
+    public void EndTurn(Vector2 piecePosition, Piece piece)
     {
-        if (player.amIPlayerDark) // If current player is dark, then set playerTurn to PlayerLight.
+        if (piece.player.amIPlayerDark) // If current player is dark, then set playerTurn to PlayerLight.
         {
             playerTurn = GameObject.Find("PlayerLight").GetComponent<Player>();
         }
@@ -223,28 +223,28 @@ public class Board : MonoBehaviour
         attackingPiece = null; // Reset the attackingPiece so the next player can move any of their pieces.
         if (!piece.amIQueen) // If I'm not already a Queen, check if player should become Queen.
         {
-            piece.amIQueen = BecomeQueen(piecePosition, piece, player);
+            piece.amIQueen = BecomeQueen(piecePosition, piece);
         }
         Debug.Log("I became Queen: " + piece.amIQueen);        
     }
 
-    // Check if piece should become a Queen or not. If becomes a Queen, then change the piece sprite to reflect the queenSprite.
-    bool BecomeQueen(Vector2 piecePosition, Piece piece, Player player)
+    // Check if piece should become a Queen or not. If becomes a Queen, then change the piece.player sprite to reflect the queenSprite.
+    bool BecomeQueen(Vector2 piecePosition, Piece piece)
     {
         SpriteRenderer pieceRenderer = piece.GetComponent<SpriteRenderer>();
-        if (player.amIPlayerDark && !piece.amIQueen)
+        if (piece.player.amIPlayerDark && !piece.amIQueen)
         {            
             if (piecePosition.y == 3.5f)
             {
-                pieceRenderer.sprite = piece.queenSprite;
+                pieceRenderer.sprite = piece.player.queenSprite;
                 return true;
             }
         }
-        if (!player.amIPlayerDark && !piece.amIQueen)
+        if (!piece.player.amIPlayerDark && !piece.amIQueen)
         {
             if (piecePosition.y == -3.5f)
             {
-                pieceRenderer.sprite = piece.queenSprite;
+                pieceRenderer.sprite = piece.player.queenSprite;
                 return true;
             }
         }
