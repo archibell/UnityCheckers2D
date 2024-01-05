@@ -15,7 +15,7 @@ public class Piece : MonoBehaviour
     Board board;
     public bool amIQueen { get; set; } // A reference to a piece that becomes a Queen, which is set by the Board class.
                                        // For a bool, the default value is always false.
-    
+    SpriteRenderer pieceRenderer;
 
     // Start is called before the first frame update.
     void Start()
@@ -26,6 +26,7 @@ public class Piece : MonoBehaviour
         mouse = Mouse.current;  // Initialize mouse.
                                 // Mouse.current >> it's the mouse device connected to the computer.               
         board = GameObject.Find("Board").GetComponent<Board>();
+        pieceRenderer = this.GetComponent<SpriteRenderer>(); // Initialize & retrieve the SpriteRenderer component.
     }
 
     // Update is called once per frame.
@@ -48,7 +49,13 @@ public class Piece : MonoBehaviour
         if (board.playerTurn != player) // If it's not my turn, then return early.
         {
             return;
-        }                 
+        }
+        pieceRenderer.sortingOrder = 1; // Make the current piece closer to the camera (above other pieces).
+                                        // Renderer.sortingOrder >> You can group GameObjects into layers in their SpriteRenderer component.
+                                        // This is called the SortingLayer.
+                                        // The sorting order decides what priority each GameObject has to the Renderer within each Sorting Layer.
+                                        // The lower the number you give it, the further back the GameObject appears.
+                                        // The higher the number, the closer the GameObject looks to the Camera. 
         position2dOnMouseDown = SnapPositionToGrid(PixelToWorld(mouse));
         rigidbody2d.MovePosition(position2dOnMouseDown);
     }
@@ -102,7 +109,8 @@ public class Piece : MonoBehaviour
         {
             // Then snap to original position.
             rigidbody2d.MovePosition(SnapPositionToGrid(fromPosition));
-        }                       
+        }
+        pieceRenderer.sortingOrder = 0; // Reset the current piece's order in layer back to 0.
     }
 
     bool PerformMove(Vector2 fromPosition, Vector2 toPosition)

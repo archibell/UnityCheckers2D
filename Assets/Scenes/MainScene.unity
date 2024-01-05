@@ -190,6 +190,10 @@ PrefabInstance:
       propertyPath: queenSprite
       value: 
       objectReference: {fileID: 21300000, guid: 115417e44f0735745beabc8644510c5d, type: 3}
+    - target: {fileID: 6906205436361068063, guid: f639973c2b002ff46931a27c15083765, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f639973c2b002ff46931a27c15083765, type: 3}
 --- !u!4 &31186640 stripped
@@ -484,6 +488,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3160767478609976413, guid: 097325b250f6c984ca1a4dfc61bd4c9e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9013598242616714857, guid: 097325b250f6c984ca1a4dfc61bd4c9e, type: 3}
+      propertyPath: m_SortingOrder
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
