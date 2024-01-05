@@ -16,7 +16,43 @@ public class Board : MonoBehaviour
     {
         // Variable initializations.
         pieceList.AddRange(Object.FindObjectsOfType<Piece>()); // AddRange copies items from an Array to a list.
+        AdjustPlayerTransparency(); // Initialize the board so the non-active players are transparent.
     }
+
+    // Adjust transparency of the non-active player & reset current player for next round.
+    void AdjustPlayerTransparency()
+    {
+        Player otherPlayer;
+        if (playerTurn == GameObject.Find("PlayerDark").GetComponent<Player>()) // If current Player is PlayerDark, then set otherPlayer to PlayerLight.
+        {
+            otherPlayer = GameObject.Find("PlayerLight").GetComponent<Player>();
+        }
+        else // Otherwise, current Player is PlayerLight. Then set otherPlayer to PlayerDark.
+        {
+            otherPlayer = GameObject.Find("PlayerDark").GetComponent<Player>();
+        }
+        // Adjust transparency of the otherPlayer's children.
+        Color transparentColor = new Color(1.0f, 1.0f, 1.0f, 0.75f); // Construct a new color with the given r,g,b,a components.
+                                                                    // Declaration: public Color(float r, float g, float b, float a).
+        int otherPlayerChildCount = otherPlayer.transform.childCount; // Transform.childCount = the number of children the parent Transform has.
+        for (int i = 0; i < otherPlayerChildCount; i++)
+        {
+            Transform childTransform = otherPlayer.transform.GetChild(i);
+            SpriteRenderer childRenderer = childTransform.GetComponent<SpriteRenderer>(); // GetComponent >> Gets a reference to a component of type T on the
+                                                                                            // same GameObject as the component specified.
+            childRenderer.color = transparentColor; // SpriteRenderer.color >> set the instance variable that controls the tint of the sprite.
+        }
+        // Adjust the tint of the currentPlayer's children back to default white (1, 1, 1, 1).
+        Color whiteColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+        int currentPlayerChildCount = playerTurn.transform.childCount;
+        for (int i = 0; i < currentPlayerChildCount; i++)
+        {
+            Transform childTransform = playerTurn.transform.GetChild(i);
+            SpriteRenderer childRenderer = childTransform.GetComponent<SpriteRenderer>();
+            childRenderer.color = whiteColor;
+        }
+    }
+
 
     // Update is called once per frame
     void Update()
@@ -220,12 +256,14 @@ public class Board : MonoBehaviour
         {
             playerTurn = GameObject.Find("PlayerDark").GetComponent<Player>();
         }
-        attackingPiece = null; // Reset the attackingPiece so the next player can move any of their pieces.
+
         if (!piece.amIQueen) // If I'm not already a Queen, check if player should become Queen.
         {
             piece.amIQueen = BecomeQueen(piecePosition, piece);
         }
-        Debug.Log("I became Queen: " + piece.amIQueen);        
+
+        attackingPiece = null; // Reset the attackingPiece so the next player can move any of their pieces.
+        AdjustPlayerTransparency(); // Adjust transparency of the non-active player & reset current player for next round.
     }
 
     // Check if piece should become a Queen or not. If becomes a Queen, then change the piece.player sprite to reflect the queenSprite.

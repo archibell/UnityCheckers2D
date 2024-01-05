@@ -938,6 +938,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9013598242616714857, guid: 097325b250f6c984ca1a4dfc61bd4c9e, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 097325b250f6c984ca1a4dfc61bd4c9e, type: 3}
 --- !u!4 &413827451 stripped
@@ -3218,7 +3222,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5835104830893811941, guid: f639973c2b002ff46931a27c15083765, type: 3}
       propertyPath: m_Name
-      value: Piecedark
+      value: PieceDark
       objectReference: {fileID: 0}
     - target: {fileID: 6806253874940597497, guid: f639973c2b002ff46931a27c15083765, type: 3}
       propertyPath: player
@@ -3384,6 +3388,22 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 542e4c42e16c497499f7d248bff3cd5b, type: 3}
+    - target: {fileID: 6906205436361068063, guid: f639973c2b002ff46931a27c15083765, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6906205436361068063, guid: f639973c2b002ff46931a27c15083765, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6906205436361068063, guid: f639973c2b002ff46931a27c15083765, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6906205436361068063, guid: f639973c2b002ff46931a27c15083765, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f639973c2b002ff46931a27c15083765, type: 3}
 --- !u!4 &2579718274284581348 stripped
