@@ -49,7 +49,7 @@ public class Piece : MonoBehaviour
         {
             return;
         }                 
-        position2dOnMouseDown = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
+        position2dOnMouseDown = SnapPositionToGrid(PixelToWorld(mouse));
         rigidbody2d.MovePosition(position2dOnMouseDown);
     }
 
@@ -68,7 +68,7 @@ public class Piece : MonoBehaviour
             return;
         }
         Vector2 fromPosition = position2dOnMouseDown;
-        Vector2 toPosition = PixelToWorldandV3ToV2(mouse); // Can't SnapPositionToGrid() here b/c we need smooth mouse drag.
+        Vector2 toPosition = PixelToWorld(mouse); // Can't SnapPositionToGrid() here b/c we need smooth mouse drag.
         if (!board.IsWithinBoardBounds(toPosition))
         {
             rigidbody2d.MovePosition(fromPosition); // If mouse is out of bounds, then move piece to original position & return early.
@@ -93,7 +93,7 @@ public class Piece : MonoBehaviour
             return;
         }
         Vector2 fromPosition = position2dOnMouseDown;
-        Vector2 toPosition = SnapPositionToGrid(PixelToWorldandV3ToV2(mouse));
+        Vector2 toPosition = SnapPositionToGrid(PixelToWorld(mouse));
         if (PerformMove(fromPosition, toPosition)) // Check if we should perform a move.
         {
             rigidbody2d.MovePosition(toPosition); // If yes, then move the piece to the new position.
@@ -137,10 +137,10 @@ public class Piece : MonoBehaviour
     }
 
     // Convert Pixel/Screen to World position.
-    Vector2 PixelToWorldandV3ToV2(Mouse mouse)
+    Vector2 PixelToWorld(Mouse mouse)
     {
-        Vector3 pixelPosition = mouse.position.ReadValue(); // Get pixel position.
-        Vector3 worldPosition = cam.ScreenToWorldPoint(pixelPosition); // Convert pixel to world position.
+        Vector2 pixelPosition = mouse.position.ReadValue(); // Get pixel position.
+        Vector2 worldPosition = cam.ScreenToWorldPoint(pixelPosition); // Convert pixel to world position.
         Vector2 position2d = worldPosition;
         return position2d;
     }
