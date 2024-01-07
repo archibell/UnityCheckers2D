@@ -32,7 +32,7 @@ public class Piece : MonoBehaviour
     // Update is called once per frame.
     void Update()
     {
-        
+        // Not used.
     }
 
     // OnMouseDown is called when the user has pressed the mouse button while over the Collider.
@@ -159,5 +159,6 @@ public class Piece : MonoBehaviour
         position2d.y = Mathf.Floor(position2d.y) + .5f;
         return position2d;
     }
+
 
 }

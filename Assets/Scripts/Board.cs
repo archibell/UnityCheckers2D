@@ -57,7 +57,7 @@ public class Board : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        // Not used.
     }
 
     public bool IsWithinBoardBounds(Vector2 toPosition) // Used by Piece.OnMouseDrag() method call.
@@ -288,6 +288,5 @@ public class Board : MonoBehaviour
         }
         return false;
     }
-
 
 }
