@@ -1,6 +1,7 @@
 # Checkers
 
 This repo contains an implementation of a 2D checkers game in Unity.
+
 This game is for 2 local players (no AI).
 
 ## Running the game
